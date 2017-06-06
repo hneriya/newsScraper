@@ -1,8 +1,8 @@
 // Grab the articles as a json
 $.getJSON("/articles", function(data) {
-  // For each one
-  for (var i = 0; i < data.length; i++) {
-    // Display the apropos information on the page
+  //only display 15
+  for (var i = 0; i < 15; i++) {
+    // displays info to page
     $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
   }
 });
@@ -15,7 +15,7 @@ $(document).on("click", "p", function() {
   // Save the id from the p tag
   var thisId = $(this).attr("data-id");
 
-  // Now make an ajax call for the Article
+  //ajax call for article that creates the side panel
   $.ajax({
     method: "GET",
     url: "/articles/" + thisId
@@ -30,7 +30,10 @@ $(document).on("click", "p", function() {
       // A textarea to add a new note body
       $("#notes").append("<textarea id='bodyinput' name='body'></textarea>");
       // A button to submit a new note, with the id of the article saved to it
-      $("#notes").append("<button data-id='" + data._id + "' id='savenote'>Save Note</button>");
+      $("#notes").append("<button data-id='" + data._id + "' id='savenote' >Save Note</button>");
+      //delete button attempt
+      $("#notes").append("<button data-id='" + data._id + "' id='deletenote' > Delete Note</button>");
+
 
       // If there's a note in the article
       if (data.note) {
@@ -44,6 +47,10 @@ $(document).on("click", "p", function() {
 
 // When you click the savenote button
 $(document).on("click", "#savenote", function() {
+
+$("#titleinput").addClass("deletable");
+$("#bodyinput").addClass("deletable");
+
   // Grab the id associated with the article from the submit button
   var thisId = $(this).attr("data-id");
 
@@ -70,3 +77,33 @@ $(document).on("click", "#savenote", function() {
   $("#titleinput").val("");
   $("#bodyinput").val("");
 });
+
+// When you click the deletenote button
+$(document).on("click", "#deletenote", function() {
+     // attempt to grab all with class of deletable
+  var textToDelete = $(this).class("deletable");
+
+  // Run a POST request to change the note, using what's entered in the inputs
+  $.ajax({
+    method: "POST",
+    url: "/articles/" + textToDelete,
+    data: {
+      // Value taken from title input
+      title: $("#titleinput").empty(),
+      // Value taken from note textarea
+      body: $("#bodyinput").empty()
+    }
+  })
+    // With that done
+    .done(function(data) {
+      // Log the response
+      console.log(data);
+      // Empty the notes section
+      $("#notes").empty();
+    });
+
+  // Also, remove the values entered in the input and textarea for note entry
+  $("#titleinput").val("");
+  $("#bodyinput").val("");
+});
+

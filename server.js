@@ -1,19 +1,12 @@
-/* Showing Mongoose's "Populated" Method (18.3.8)
- * INSTRUCTOR ONLY
- * =============================================== */
-
 // Dependencies
 var express = require("express");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var mongoose = require("mongoose");
-// Requiring our Note and Article models
 var Note = require("./models/Note.js");
 var Article = require("./models/Article.js");
-// Our scraping tools
 var request = require("request");
 var cheerio = require("cheerio");
-// Set mongoose to leverage built in JavaScript ES6 Promises
 mongoose.Promise = Promise;
 
 
@@ -44,34 +37,28 @@ db.once("open", function() {
 });
 
 
-// Routes
-// ======
-
-// A GET request to do actual scraping
+// scraping:
 app.get("/scrape", function(req, res) {
-  // First, we grab the body of the html with request
+  // grab the html
   request("https://losangeles.craigslist.org/search/sec", function(error, response, html) {
     // console.log(html)
 
-    // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(html);
-    // console.log(html)
-    // console.log($('article.article-teaser'))
-    // Now, we grab every h2 within an article tag, and do the following:
+          // console.log(html)
+          // console.log($('article.article-teaser'))
+    // grabbing the info we need
     $("li.result-row").each(function(i, element) {
       // Save an empty result object
       var result = {};
       console.log(this)
-      // Add the text and href of every link, and save them as properties of the result object
+      // save text and href as properties on the object
       result.title = $(this).find("p").find("a").text();
       result.link = $(this).find("p").find("a").attr("href");
       console.log(result.title);
 
-      // Using our Article model, create a new entry
-      // This effectively passes the result object to the entry (and the title and link)
       var entry = new Article(result);
 
-      // Now, save that entry to the db
+      // save entry to the db
       entry.save(function(err, doc) {
         // Log any errors
         if (err) {
@@ -88,8 +75,23 @@ app.get("/scrape", function(req, res) {
     });
   });
   // Tell the browser that we finished scraping the text
-  res.send("Scrape Complete");
+  res.send("you finished scraping this information!!!");
 });
+
+
+// attempt at a delete route:
+      // //Delete route for comments
+      // app.get("/comments/one/:id", function(req, res) {
+
+      //     notes.Remove({ "_id": req.params.id }, function(err, removed) {
+      //         var removednotes = removed.id;
+      //     });
+      //     res.redirect('/');
+
+      //     console.log('note deleted');
+      // });
+      // // ------
+
 
 // This will get the articles we scraped from the mongoDB
 app.get("/articles", function(req, res) {
