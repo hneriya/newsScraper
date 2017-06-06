@@ -1,5 +1,5 @@
 {
-  "name": "mongoose_skeleton",
+  "name": "package.json",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -16,5 +16,14 @@
     "mongoose": "^4.4.6",
     "morgan": "^1.7.0",
     "request": "^2.69.0"
-  }
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hneriya/newsScraper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hneriya/newsScraper/issues"
+  },
+  "homepage": "https://github.com/hneriya/newsScraper#readme"
 }
